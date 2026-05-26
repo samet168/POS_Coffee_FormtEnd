@@ -11,6 +11,7 @@ const Category = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+
   const debounceRef = useRef(null);
 
   // ================= FETCH =================
@@ -52,17 +53,12 @@ const Category = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this category?"
-    );
-
-    if (!confirmDelete) return;
+    const ok = window.confirm("Are you sure?");
+    if (!ok) return;
 
     try {
       await API_URL.delete(`/item-categories/${id}`);
-
-      alert("Delete Success");
-
+      alert("Deleted");
       fetchCategories(currentPage, search);
     } catch (error) {
       alert("Delete failed");
@@ -70,15 +66,16 @@ const Category = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5ebe0] p-6">
+    <div className="min-h-screen bg-[#f5ebe0] p-4 md:p-6">
 
-      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#d6ccc2] relative">
+      {/* CONTAINER */}
+      <div className="bg-white/95 rounded-2xl shadow-md border border-[#e8d8c8]/60 overflow-hidden relative">
 
-        {/* ================= LOADING OVERLAY ================= */}
+        {/* LOADING */}
         {loading && (
-          <div className="absolute inset-0 bg-black/20 flex justify-center items-center z-50">
-            <div className="bg-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3">
-              <div className="w-6 h-6 border-4 border-[#6f4e37] border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-50">
+            <div className="bg-white px-5 py-3 rounded-xl shadow flex items-center gap-3 border border-[#e8d8c8]/60">
+              <div className="w-5 h-5 border-4 border-[#6f4e37] border-t-transparent rounded-full animate-spin"></div>
               <span className="text-[#6f4e37] font-semibold">
                 Loading...
               </span>
@@ -86,29 +83,25 @@ const Category = () => {
           </div>
         )}
 
-        {/* ================= HEADER ================= */}
-        <div className="bg-[#6f4e37] text-white px-6 py-5 flex justify-between items-center">
+        {/* HEADER */}
+        <div className="bg-[#6f4e37] text-white p-4 md:p-5 flex flex-col md:flex-row md:justify-between md:items-center gap-3">
 
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-xl md:text-2xl font-bold">
             ☕ Category Management
           </h1>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
 
-            {/* ================= SEARCH ================= */}
-            <div className="relative">
+            {/* SEARCH */}
+            <div className="relative w-full md:w-64">
 
               <input
                 type="text"
                 placeholder="Search category..."
                 value={search}
                 onChange={handleSearch}
-                className="w-64 pl-10 pr-10 py-2 rounded-xl text-black outline-none focus:ring-2 focus:ring-[#ede0d4]"
+                className="w-full pl-3 pr-8 py-2 rounded-xl text-black outline-none border border-[#e8d8c8] focus:ring-2 focus:ring-[#ddb892]"
               />
-
-              <span className="absolute left-3 top-2.5 text-gray-400">
-                
-              </span>
 
               {search && (
                 <button
@@ -124,65 +117,66 @@ const Category = () => {
 
             </div>
 
-            {/* ================= ADD ================= */}
+            {/* ADD BUTTON */}
             <Link
               to="/dashboard/category/add"
-              className="bg-[#ede0d4] text-[#6f4e37] px-5 py-2 rounded-xl hover:bg-white transition font-semibold text-sm"
+              className="bg-[#ddb892] text-[#4e342e] px-4 py-2 rounded-xl font-semibold text-center hover:bg-white transition border border-[#e8d8c8]/60"
             >
-              + Add
+              + Add Category
             </Link>
 
           </div>
         </div>
 
-        {/* ================= TABLE ================= */}
+        {/* TABLE */}
         <div className="overflow-x-auto">
 
-          <table className="min-w-full">
+          <table className="w-full text-sm">
 
-            <thead className="bg-[#ede0d4] text-[#6f4e37]">
+            <thead className="bg-[#ede0d4] text-[#4e342e]">
               <tr>
-                <th className="py-4 px-4 text-left">#</th>
-                <th className="py-4 px-4 text-left">Category Name</th>
-                <th className="py-4 px-4 text-center">Actions</th>
+                <th className="p-3 text-left">#</th>
+                <th className="p-3 text-left">Category Name</th>
+                <th className="p-3 text-center">Actions</th>
               </tr>
             </thead>
 
             <tbody>
 
               {!loading && categories.length > 0 ? (
-                categories.map((category, index) => (
+                categories.map((c, i) => (
                   <tr
-                    key={category.id}
-                    className="border-b border-[#f1e3d3] hover:bg-[#faf7f2]"
+                    key={c.id}
+                    className="border-b border-[#f3e6d8]/50 hover:bg-[#faf7f2] transition"
                   >
-                    <td className="py-4 px-4 text-gray-500">
-                      {(currentPage - 1) * 20 + index + 1}
+                    <td className="p-3 text-gray-500">
+                      {(currentPage - 1) * 20 + i + 1}
                     </td>
 
-                    <td className="py-4 px-4 font-medium text-[#4e342e]">
-                      {category.name}
+                    <td className="p-3 font-medium text-[#4e342e]">
+                      {c.name}
                     </td>
 
-                    <td className="py-4 px-4">
-                      <div className="flex justify-center gap-3">
+                    <td className="p-3">
+                      <div className="flex justify-center gap-2">
 
                         <Link
-                          to={`/dashboard/category/edit/${category.id}`}
-                          className="bg-[#b08968] text-white px-4 py-2 rounded-lg hover:bg-[#9c6644]"
+                          to={`/dashboard/category/edit/${c.id}`}
+                          className="px-3 py-1 rounded-lg bg-[#b08968] text-white border border-[#e8d8c8]/40"
                         >
                           Edit
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(category.id)}
-                          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                          onClick={() => handleDelete(c.id)}
+                          className="px-3 py-1 rounded-lg bg-red-500 text-white border border-red-300"
                         >
                           Delete
                         </button>
 
                       </div>
                     </td>
+
                   </tr>
                 ))
               ) : (
@@ -196,31 +190,30 @@ const Category = () => {
             </tbody>
 
           </table>
+
         </div>
 
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center px-6 py-4 bg-[#faf7f2]">
+        {/* PAGINATION */}
+        <div className="flex justify-between items-center p-4 bg-[#faf7f2] border-t border-[#e8d8c8]/60">
 
           <button
             disabled={currentPage === 1 || loading}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-            className="bg-[#6f4e37] text-white px-5 py-2 rounded-xl disabled:opacity-40"
+            onClick={() => setCurrentPage((p) => p - 1)}
+            className="px-4 py-2 bg-[#6f4e37] text-white rounded-xl disabled:opacity-40"
           >
-            ← Prev
+            Prev
           </button>
 
-          <span className="text-sm font-medium text-[#6f4e37]">
-            Page {currentPage} of {pagination.last_page || 1}
+          <span className="text-[#6f4e37] font-bold text-sm">
+            Page {currentPage} / {pagination.last_page || 1}
           </span>
 
           <button
-            disabled={
-              currentPage === pagination.last_page || loading
-            }
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            className="bg-[#6f4e37] text-white px-5 py-2 rounded-xl disabled:opacity-40"
+            disabled={currentPage === pagination.last_page || loading}
+            onClick={() => setCurrentPage((p) => p + 1)}
+            className="px-4 py-2 bg-[#6f4e37] text-white rounded-xl disabled:opacity-40"
           >
-            Next →
+            Next
           </button>
 
         </div>

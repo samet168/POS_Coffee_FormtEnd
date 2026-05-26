@@ -1,6 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/set-state-in-effect */
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API_URL from "../../services/api";
@@ -12,231 +10,182 @@ const User = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const [typingTimeout, setTypingTimeout] = useState(null);
-
-  // ================= FETCH USERS =================
   const fetchUsers = async (page = 1, searchQuery = "") => {
     try {
       setLoading(true);
 
-      const response = await API_URL.get(
+      const res = await API_URL.get(
         `/user/list?page=${page}&search=${searchQuery}`
       );
 
-      setUsers(response.data.data || []);
-      setPagination(response.data || {});
-    } catch (error) {
-      console.error("Error fetching users:", error);
+      setUsers(res.data.data || []);
+      setPagination(res.data || {});
+    } catch (err) {
       setUsers([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // ================= FIRST LOAD =================
   useEffect(() => {
     fetchUsers(currentPage, search);
   }, [currentPage]);
 
-  // ================= SEARCH =================
   useEffect(() => {
-    if (typingTimeout) clearTimeout(typingTimeout);
-
-    const timeout = setTimeout(() => {
-      fetchUsers(1, search);
+    const t = setTimeout(() => {
       setCurrentPage(1);
+      fetchUsers(1, search);
     }, 400);
 
-    setTypingTimeout(timeout);
-
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(t);
   }, [search]);
 
-  // ================= DELETE =================
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "☕ តើអ្នកប្រាកដជាចង់លុប User នេះមែនទេ?"
-    );
-
-    if (!confirmDelete) return;
+    if (!window.confirm("Delete user?")) return;
 
     try {
       await API_URL.delete(`/user/${id}`);
-
-      alert("☕ Delete Success");
-
       fetchUsers(currentPage, search);
-    } catch (error) {
-      console.error("Delete Error:", error);
-      alert("Delete Failed");
+    } catch (err) {
+      alert("Delete failed");
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#f5ebe0] p-6">
+    <div className="min-h-screen bg-[#f5ebe0] p-4 md:p-6">
 
-      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#d6ccc2] relative">
+      {/* CARD */}
+      <div className="bg-white rounded-2xl shadow-sm border border-[#eadccf] overflow-hidden">
 
-        {/* ================= LOADING ================= */}
-        {loading && (
-          <div className="absolute inset-0 bg-black/20 flex justify-center items-center z-50">
-            <div className="bg-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3">
-              <div className="w-6 h-6 border-4 border-[#6f4e37] border-t-transparent rounded-full animate-spin"></div>
+        {/* HEADER */}
+        <div className="bg-[#6f4e37] text-white p-4 md:p-5 flex flex-col md:flex-row md:justify-between md:items-center gap-3">
 
-              <span className="text-[#6f4e37] font-semibold">
-                Loading...
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* ================= HEADER ================= */}
-        <div className="bg-[#6f4e37] text-white px-6 py-5 flex justify-between items-center">
-
-          <h1 className="text-3xl font-bold">
+          {/* TITLE */}
+          <h1 className="text-xl md:text-2xl font-bold">
             ☕ User Management
           </h1>
 
-          <div className="flex items-center gap-3">
+          {/* ACTIONS */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
 
             {/* SEARCH */}
-            <div className="relative">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search user..."
+              className="w-full sm:w-64 px-4 py-2 rounded-xl text-black outline-none border border-transparent focus:border-white/30"
+            />
 
-              <input
-                type="text"
-                placeholder="Search user..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-64 pl-10 pr-10 py-2 rounded-xl text-black outline-none focus:ring-2 focus:ring-[#ede0d4]"
-              />
-
-              <span className="absolute left-3 top-2.5 text-gray-400">
-                🔍
-              </span>
-
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute right-3 top-2 text-gray-500 hover:text-red-500"
-                >
-                  ✕
-                </button>
-              )}
-
-            </div>
-
-            {/* ADD USER */}
+            {/* ADD BUTTON */}
             <Link
               to="/dashboard/users/add"
-              className="bg-[#ede0d4] text-[#6f4e37] px-5 py-2 rounded-xl hover:bg-white transition font-semibold"
+              className="
+                w-full sm:w-auto
+                flex items-center justify-center
+                px-5 py-2 rounded-xl
+                bg-[#ede0d4] text-[#6f4e37]
+                font-semibold
+                hover:bg-white transition
+                whitespace-nowrap
+              "
             >
               + Add User
             </Link>
 
           </div>
-
         </div>
 
-        {/* ================= TABLE ================= */}
+        {/* LOADING */}
+        {loading && (
+          <div className="p-6 text-center text-[#6f4e37]">
+            Loading...
+          </div>
+        )}
+
+        {/* TABLE */}
         <div className="overflow-x-auto">
 
-          <table className="min-w-full">
+          <table className="w-full border-collapse">
 
-            <thead className="bg-[#ede0d4] text-[#6f4e37]">
-              <tr>
-                <th className="py-4 px-4 text-left">#</th>
-                <th className="py-4 px-4 text-left">Image</th>
-                <th className="py-4 px-4 text-left">Name</th>
-                <th className="py-4 px-4 text-left">Email</th>
-                <th className="py-4 px-4 text-left">Role</th>
-                <th className="py-4 px-4 text-center">Actions</th>
+            {/* HEAD */}
+            <thead>
+              <tr className="bg-[#f6ede3] text-[#6f4e37] text-sm">
+
+                <th className="p-3 text-left border-b border-[#eadccf]">#</th>
+                <th className="p-3 text-left border-b border-[#eadccf]">Image</th>
+                <th className="p-3 text-left border-b border-[#eadccf]">Name</th>
+                <th className="p-3 text-left border-b border-[#eadccf]">Email</th>
+                <th className="p-3 text-left border-b border-[#eadccf]">Role</th>
+                <th className="p-3 text-center border-b border-[#eadccf]">Action</th>
+
               </tr>
             </thead>
 
+            {/* BODY */}
             <tbody>
 
-              {!loading && users.length > 0 ? (
-                users.map((user, index) => (
-
+              {users.length > 0 ? (
+                users.map((u, i) => (
                   <tr
-                    key={user.id}
-                    className="border-b border-[#f1e3d3] hover:bg-[#faf7f2] transition"
+                    key={u.id}
+                    className="hover:bg-[#faf7f2] border-b border-[#f1e6dc]"
                   >
 
-                    {/* NUMBER */}
-                    <td className="py-4 px-4">
-                      {(currentPage - 1) * 10 + index + 1}
+                    <td className="p-3 text-gray-600">
+                      {i + 1}
                     </td>
 
-                    {/* IMAGE */}
-                    <td className="py-4 px-4">
-
+                    <td className="p-3">
                       <img
                         src={
-                          user.image
-                            ? `${user.image}?t=${new Date().getTime()}`
-                            : `https://ui-avatars.com/api/?name=${user.name}`
+                          u.image ||
+                          `https://ui-avatars.com/api/?name=${u.name}`
                         }
-                        alt="profile"
-                        className="w-14 h-14 rounded-2xl object-cover border-2 border-[#b08968] shadow"
+                        className="w-11 h-11 rounded-xl border border-[#e7d7c8]"
                       />
-
                     </td>
 
-                    {/* NAME */}
-                    <td className="py-4 px-4 font-medium text-[#4e342e]">
-                      {user.name}
+                    <td className="p-3 font-medium text-[#3b2a20]">
+                      {u.name}
                     </td>
 
-                    {/* EMAIL */}
-                    <td className="py-4 px-4 text-gray-700">
-                      {user.email}
+                    <td className="p-3 text-gray-600">
+                      {u.email}
                     </td>
 
-                    {/* ROLE */}
-                    <td className="py-4 px-4">
-
-                      <span className="bg-[#ddb892] text-[#4e342e] px-3 py-1 rounded-full text-sm font-semibold">
-                        {user.role}
+                    <td className="p-3">
+                      <span className="px-3 py-1 rounded-full text-xs bg-[#e7d7c8] text-[#4e342e]">
+                        {u.role}
                       </span>
-
                     </td>
 
-                    {/* ACTION */}
-                    <td className="py-4 px-4 text-center">
-
-                      <div className="flex justify-center gap-3">
+                    <td className="p-3">
+                      <div className="flex justify-center gap-2">
 
                         <Link
-                          to={`/dashboard/users/edit/${user.id}`}
-                          className="bg-[#b08968] text-white px-4 py-2 rounded-lg hover:bg-[#9c6644] transition"
+                          to={`/dashboard/users/edit/${u.id}`}
+                          className="px-3 py-1 rounded-lg bg-[#b08968] text-white text-sm hover:bg-[#9c6644]"
                         >
                           Edit
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(user.id)}
-                          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                          onClick={() => handleDelete(u.id)}
+                          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600"
                         >
                           Delete
                         </button>
 
                       </div>
-
                     </td>
 
                   </tr>
                 ))
               ) : (
                 <tr>
-
-                  <td
-                    colSpan="6"
-                    className="text-center py-10 text-gray-500"
-                  >
-                    ☕ No Users Found
+                  <td colSpan="6" className="text-center py-10 text-gray-500">
+                    No Users Found
                   </td>
-
                 </tr>
               )}
 
@@ -246,27 +195,25 @@ const User = () => {
 
         </div>
 
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center px-6 py-5 bg-[#faf7f2]">
+        {/* PAGINATION */}
+        <div className="flex justify-between items-center p-4 bg-[#faf7f2]">
 
           <button
-            disabled={currentPage === 1 || loading}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-            className="bg-[#6f4e37] text-white px-5 py-2 rounded-xl disabled:opacity-40"
+            onClick={() => setCurrentPage((p) => p - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-[#6f4e37] text-white rounded-xl disabled:opacity-40"
           >
-            Previous
+            Prev
           </button>
 
-          <span className="font-bold text-[#6f4e37] text-lg">
-            Page {currentPage} of {pagination.last_page || 1}
+          <span className="text-[#6f4e37] font-semibold">
+            Page {currentPage}
           </span>
 
           <button
-            disabled={
-              currentPage === pagination.last_page || loading
-            }
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            className="bg-[#6f4e37] text-white px-5 py-2 rounded-xl disabled:opacity-40"
+            onClick={() => setCurrentPage((p) => p + 1)}
+            disabled={currentPage === pagination.last_page}
+            className="px-4 py-2 bg-[#6f4e37] text-white rounded-xl disabled:opacity-40"
           >
             Next
           </button>
@@ -274,7 +221,6 @@ const User = () => {
         </div>
 
       </div>
-
     </div>
   );
 };
