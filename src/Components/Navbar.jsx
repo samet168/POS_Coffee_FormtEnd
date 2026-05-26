@@ -7,6 +7,7 @@ import profileIcon from "../assets/icon/user.png";
 import editIcon from "../assets/icon/edit.png";
 import logoutIcon from "../assets/icon/logout.png";
 import logo from "../assets/icon/Logo.png";
+import dashboard from "../assets/icon/dashboard.png";
 
 const Navbar = ({ setOpen }) => {
   const [user, setUser] = useState(null);
@@ -89,6 +90,14 @@ const Navbar = ({ setOpen }) => {
             >
               <img src={editIcon} className="w-5 h-5" />
               Edit Profile
+            </Link>
+             <Link
+              to="/dashboard"
+              onClick={() => setDropdown(false)}
+              className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+            >
+            <img src={dashboard} className="w-5 h-5" />
+              Dashboard
             </Link>
 
             <button
