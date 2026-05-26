@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import profileIcon from "../../assets/icon/user.png";
 import editIcon from "../../assets/icon/edit.png";
 import logoutIcon from "../../assets/icon/logout.png";
-import logo from "../../assets/icon/logo.png";
+import logo from "../../assets/icon/Logo.png";
 
 const Navbar = ({ setOpen }) => {
   const [user, setUser] = useState(null);
