@@ -1,4 +1,3 @@
-import React from "react";
 
 const Payment = ({ isOpen, onClose, onSelectPaymentType }) => {
   if (!isOpen) return null;
