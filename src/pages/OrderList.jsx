@@ -53,7 +53,7 @@ export const OrderList = () => {
     );
 
     api
-      .put(`/order_items/${item.id}`, {
+      .post(`/order_items/${item.id}`, {
         quantity: newQty,
       })
       .catch(() => fetchOrders());
