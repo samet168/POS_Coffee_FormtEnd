@@ -24,7 +24,7 @@ const Login = () => {
         localStorage.setItem("user", JSON.stringify(userData));
 
         alert("ចូលប្រើប្រាស់ប្រព័ន្ធជោគជ័យ!");
-        navigate("/menu");
+        navigate("/");
       } else {
         alert("មិនអាចទាញយកសញ្ញាសម្គាល់ (Token) បានទេ!");
       }
