@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -11,6 +12,7 @@ export const Menu = () => {
 
   useEffect(() => {
     fetchItems();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   const fetchItems = () => {

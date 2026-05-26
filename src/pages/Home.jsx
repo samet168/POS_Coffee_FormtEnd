@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/immutability */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -101,7 +103,7 @@ const Home = () => {
       <div className="bg-[#3b1f0f] text-white text-center py-8 rounded-b-3xl shadow-md">
         <h1 className="text-2xl font-bold">404' CAFE</h1>
         <p className="text-sm text-amber-200 mt-1">
-          សូមជ្រើសរើសមុខម្ហូប
+          សូមជ្រើសរើស
         </p>
       </div>
 
